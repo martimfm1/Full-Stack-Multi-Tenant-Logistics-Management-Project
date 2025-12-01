@@ -27,37 +27,38 @@ class ApiClient {
     options: RequestInit = {}
   ): Promise<ApiResponse<T>> {
     const token = this.getToken()
-    const headers: HeadersInit = {
+  
+    const headers: Record<string, string> = {
       "Content-Type": "application/json",
-      ...options.headers,
+      ...(options.headers as Record<string, string>),
     }
-
+  
     if (token) {
       headers["Authorization"] = `Bearer ${token}`
     }
-
+  
     try {
       const response = await fetch(`${API_BASE_URL}${endpoint}`, {
         ...options,
         headers,
       })
-
+  
       const data = await response.json()
-
+  
       if (!response.ok) {
         return {
           error: data.error || "Erro ao processar requisição",
           details: data.details,
         }
       }
-
+  
       return { data }
     } catch (error) {
       return {
         error: error instanceof Error ? error.message : "Erro de conexão",
       }
     }
-  }
+  }  
 
   // Orders
   async getOrders(params?: {
